@@ -10,7 +10,14 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         ZStack {
-            MainView()
+            SwipeView(showPaywall: {
+//                if !purchaseManager.hasPro && remoteConfigManager.isShowOnboardingPaywall {
+//                    userDefault.hasShownPaywall = true
+//                }
+//                else {
+//                    userDefault.hasFinishedOnboarding = true
+//                }
+            })
         }
     }
 }

@@ -15,6 +15,7 @@ struct FontManager {
     static var bricolageGrotesqueSemiBoldFont = "HanBricolageGrotesquekenGrotesk-SemiBold"
     static var bricolageGrotesqueBoldFont = "BricolageGrotesque-Bold"
     static var bricolageGrotesqueLightFont = "BricolageGrotesque-Light"
+    static var bricolageGrotesqueExtraBold = "BricolageGrotesque-ExtraBold"
     
     // MARK: - BricolageGrotesque
     
@@ -34,5 +35,7 @@ struct FontManager {
     static func bricolageGrotesqueLightFont(size: CGFloat) -> Font {
         .custom(bricolageGrotesqueLightFont, size: size)
     }
-    
+    static func bricolageGrotesqueExtraBold(size: CGFloat) -> Font {
+        .custom(bricolageGrotesqueExtraBold, size: size)
+    }
 }
