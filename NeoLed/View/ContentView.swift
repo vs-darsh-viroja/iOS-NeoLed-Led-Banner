@@ -8,16 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @EnvironmentObject var userDefault: UserSettings
+    
     var body: some View {
         ZStack {
-            SwipeView(showPaywall: {
-//                if !purchaseManager.hasPro && remoteConfigManager.isShowOnboardingPaywall {
-//                    userDefault.hasShownPaywall = true
-//                }
-//                else {
-//                    userDefault.hasFinishedOnboarding = true
-//                }
-            })
+            if userDefault.hasFinishedOnboarding {
+                MainView()
+            }
+            else {
+                SwipeView(showPaywall: {
+                    //                if !purchaseManager.hasPro && remoteConfigManager.isShowOnboardingPaywall {
+                    //                    userDefault.hasShownPaywall = true
+                    //                }
+                    //                else {
+                    //                    userDefault.hasFinishedOnboarding = true
+                    //                }
+                    userDefault.hasFinishedOnboarding = true
+                })
+            }
         }
     }
 }

@@ -45,7 +45,7 @@ struct MainView: View {
                         Button {
                             selectedTab = .explore
                         } label: {
-                            VStack(spacing: ScaleUtility.scaledSpacing(8.88)) {
+                            VStack(spacing: ScaleUtility.scaledSpacing(4.88)) {
                                 Image(.exploreIcon)
                                     .resizable()
                                     .frame(width: ScaleUtility.scaledValue(29.26829), height: ScaleUtility.scaledValue(29.26829))
@@ -64,7 +64,7 @@ struct MainView: View {
                         Button {
                             selectedTab = .create
                         } label: {
-                            VStack(spacing: ScaleUtility.scaledSpacing(8.88)) {
+                            VStack(spacing: ScaleUtility.scaledSpacing(4.88)) {
                                 Image(.createIcon)
                                     .resizable()
                                     .frame(width: ScaleUtility.scaledValue(29.26829), height: ScaleUtility.scaledValue(29.26829))
@@ -83,7 +83,7 @@ struct MainView: View {
                         Button {
                             selectedTab = .history
                         } label: {
-                            VStack(spacing: ScaleUtility.scaledSpacing(8.88)) {
+                            VStack(spacing: ScaleUtility.scaledSpacing(4.88)) {
                                 Image(.historyIcon)
                                     .resizable()
                                     .frame(width: ScaleUtility.scaledValue(29.26829), height: ScaleUtility.scaledValue(29.26829))
@@ -98,22 +98,17 @@ struct MainView: View {
                         }
                     }
                     .padding(.horizontal, ScaleUtility.scaledSpacing(34))
-                    .padding(.bottom, ScaleUtility.scaledSpacing(9))
-                    .frame(height: ScaleUtility.scaledValue(107))
+                    .padding(.bottom, ScaleUtility.scaledSpacing(10))
+                    .frame(height: ScaleUtility.scaledValue(97))
                     .background {
                         Image(.tabBg)
                             .resizable()
-                            .frame(height: ScaleUtility.scaledValue(107))
+                            .frame(height: ScaleUtility.scaledValue(97))
                             .frame(maxWidth:.infinity)
                     }
                     .cornerRadius(10)
                 }
-                .background {
-                    Image(.background)
-                        .resizable()
-                        .scaledToFill()
-                }
-                .ignoresSafeArea(.all)
+    
             }
             .ignoresSafeArea(.all)
         }
