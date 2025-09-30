@@ -1,21 +1,22 @@
 //
-//  ReusableCustomSlider.swift
+//  sizeCustomSlider.swift
 //  NeoLed
 //
-//  Created by Purvi Sancheti on 26/09/25.
+//  Created by Purvi Sancheti on 29/09/25.
 //
 
+import Foundation
 import Foundation
 import SwiftUI
 
 
 
 // MARK: - Updated Custom Slider (Reusable)
-struct ReusableCustomSlider: View {
+struct sizeCustomSlider: View {
     @Binding var value: CGFloat
     let range: ClosedRange<CGFloat>
 
-    let sliderWidth: CGFloat = ScaleUtility.scaledValue(ScaleUtility.isPad() ? 700 : 310)
+    let sliderWidth: CGFloat = ScaleUtility.scaledValue(ScaleUtility.isPad() ? 700 : 260)
     let trackHeight: CGFloat = 10
     let thumbSize: CGFloat = 32
     let innerDotSize: CGFloat = 8

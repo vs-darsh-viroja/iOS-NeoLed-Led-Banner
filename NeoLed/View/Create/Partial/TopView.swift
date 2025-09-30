@@ -12,6 +12,7 @@ struct TopView:View {
     
     @Binding var text: String
     @FocusState.Binding var isInputFocused: Bool
+    var showPreview: () -> Void
     
     var body: some View {
         VStack(spacing: ScaleUtility.scaledSpacing(30)) {
@@ -32,10 +33,20 @@ struct TopView:View {
                 )
                 .cornerRadius(10)
                 .overlay {
-                    Text("Enter Your Text")
-                        .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(36)))
-                        .foregroundColor(.black)
-                        .padding(.horizontal)
+                    
+                    if text == "" {
+                        Text("Enter Your Text")
+                            .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(36)))
+                            .foregroundColor(.black)
+                            .padding(.horizontal)
+                    }
+                    else {
+                        
+                        Text(text)
+                            .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(36)))
+                            .foregroundColor(.black)
+                            .padding(.horizontal)
+                    }
                 }
                 .padding(.horizontal,ScaleUtility.scaledSpacing(20))
             
@@ -81,28 +92,35 @@ struct TopView:View {
                     
                 }
                 
+                Button {
+                    showPreview()
+                } label: {
+                    
+                    Text("Preview")
+                      .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
+                      .kerning(0.42)
+                      .multilineTextAlignment(.center)
+                      .foregroundColor(.white)
+                      .padding(.vertical, ScaleUtility.scaledSpacing(9))
+                      .padding(.horizontal, ScaleUtility.scaledSpacing(18))
+                      .background(
+                        EllipticalGradient(
+                            stops: [
+                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                            ],
+                            center: UnitPoint(x: 0.36, y: 0.34)
+                        )
+                      )
+                      .cornerRadius(5)
+                      .overlay {
+                          RoundedRectangle(cornerRadius: 5)
+                              .stroke(.accent, lineWidth: 1)
+                      }
+                }
+
                 
-                Text("Preview")
-                  .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
-                  .kerning(0.42)
-                  .multilineTextAlignment(.center)
-                  .foregroundColor(.white)
-                  .padding(.vertical, ScaleUtility.scaledSpacing(9))
-                  .padding(.horizontal, ScaleUtility.scaledSpacing(18))
-                  .background(
-                    EllipticalGradient(
-                        stops: [
-                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
-                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
-                        ],
-                        center: UnitPoint(x: 0.36, y: 0.34)
-                    )
-                  )
-                  .cornerRadius(5)
-                  .overlay {
-                      RoundedRectangle(cornerRadius: 5)
-                          .stroke(.accent, lineWidth: 1)
-                  }
+    
             }
             .padding(.horizontal,ScaleUtility.scaledSpacing(20))
             

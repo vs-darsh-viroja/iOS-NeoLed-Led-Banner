@@ -17,6 +17,19 @@ struct FontManager {
     static var bricolageGrotesqueLightFont = "BricolageGrotesque-Light"
     static var bricolageGrotesqueExtraBold = "BricolageGrotesque-ExtraBold"
     
+    static var audiowideRegular = "Audiowide-Regular"
+    
+    static var bakbakOneRegular = "BakbakOne-Regular"
+    
+    static var caesarDressingRegular = "CaesarDressing"
+    
+    static var battambangRegular = "Battambang-Regular"
+    
+    static var bradleyHandITCTTBold = "BradleyHandITCTT-Bold"
+    
+    static var brushScriptStd = "BrushScriptStd"
+    
+    
     // MARK: - BricolageGrotesque
     
 
@@ -38,4 +51,43 @@ struct FontManager {
     static func bricolageGrotesqueExtraBold(size: CGFloat) -> Font {
         .custom(bricolageGrotesqueExtraBold, size: size)
     }
+     
+    // MARK: - Audiowide
+    
+    static func audiowideRegular(size: CGFloat) -> Font {
+        .custom(audiowideRegular, size: size)
+    }
+    
+    // MARK: - BakbakOne
+    
+    static func bakbakOneRegular(size: CGFloat) -> Font {
+        .custom(bakbakOneRegular, size: size)
+    }
+
+    // MARK: - Caesar Dressing
+    
+    static func caesarDressingRegular(size: CGFloat) -> Font {
+        .custom(caesarDressingRegular, size: size)
+    }
+   
+    // MARK: - Battambang
+    
+    static func battambangRegular(size: CGFloat) -> Font {
+        .custom(battambangRegular, size: size)
+    }
+
+    
+    // MARK: - Bradley Hand
+    
+    static func bradleyHandITCTTBold(size: CGFloat) -> Font {
+        .custom(bradleyHandITCTTBold, size: size)
+    }
+
+    
+    // MARK: - Brush Script Std
+    
+    static func brushScriptStd(size: CGFloat) -> Font {
+        .custom(brushScriptStd, size: size)
+    }
+
 }
