@@ -20,16 +20,19 @@ struct ResultView: View {
     let selectedAlignment: String
     let selectedShape: String
     let textSpeed: CGFloat
+    let isHD: Bool
     
-      private var isBold: Bool { selectedEffects.contains("Bold") }
-      private var isLight: Bool { selectedEffects.contains("Light") }
-      private var isFlash: Bool { selectedEffects.contains("Flash") }
-      private var isMirror: Bool { selectedEffects.contains("Mirror") }
+    private var isBold: Bool { selectedEffects.contains("Bold") }
+    private var isLight: Bool { selectedEffects.contains("Light") }
+    private var isFlash: Bool { selectedEffects.contains("Flash") }
+    private var isMirror: Bool { selectedEffects.contains("Mirror") }
     var onBack: () -> Void
-  
+   
     @State private var isFlashing = false
-    @State var offset: CGFloat = 0
-
+    
+    @State var offsetx: CGFloat = 0
+    @State var offsety: CGFloat = 0
+    @State var textWidth: CGFloat = 0
     @State var show = false
     
     var body: some View {
@@ -38,56 +41,132 @@ struct ResultView: View {
             GeometryReader { geo in
                 
                 ZStack {
-            
-                    getShapeImage()
-                        .frame(width: geo.size.width, height: geo.size.height)
-                        .opacity(0.1)
-                   
+                    if !isHD {
+                        getShapeImage()
+                            .frame(width: geo.size.width, height: geo.size.height)
+                            .opacity(0.1)
+                    }
                 }
                     
                 ZStack {
                     // Blurred glow layers behind
-                    Text(text)
-                        .font(.custom(selectedFont, size: textSize * 100))
-                        .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                    if strokeSize > 0 {
+                        StrokeText(
+                            text: text,
+                            width: strokeSize,
+                            color: outlineEnabled ? selectedOutlineColor.color : .white,
+                            font: .custom(selectedFont, size: textSize * 100),
+                            fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
+                        )
                         .modifier(ColorModifier(colorOption: selectedColor))
-                        .blur(radius: isLight ? 40 : 5)
+                        .blur(radius: isLight ? 40 : 0)
                         .opacity(isLight ? 0.5 : 1)
+                    } else {
+                        Text(text)
+                            .font(.custom(selectedFont, size: textSize * 100))
+                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                            .modifier(ColorModifier(colorOption: selectedColor))
+                            .blur(radius: isLight ? 40 : 0)
+                            .opacity(isLight ? 0.5 : 1)
+                    }
                     
-                    Text(text)
-                        .font(.custom(selectedFont, size: textSize * 100))
-                        .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                    if strokeSize > 0 {
+                        StrokeText(
+                            text: text,
+                            width: strokeSize,
+                            color: outlineEnabled ? selectedOutlineColor.color : .white,
+                            font: .custom(selectedFont, size: textSize * 100),
+                            fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
+                        )
+                        .kerning(0.6)
                         .modifier(ColorModifier(colorOption: selectedColor))
-                        .blur(radius: isLight ? 20 : 10)
+                        .blur(radius: isLight ? 20 : 0)
                         .opacity(isLight ? 0.7 : 1)
+                    } else {
+                        Text(text)
+                            .font(.custom(selectedFont, size: textSize * 100))
+                            .kerning(0.4)
+                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                            .modifier(ColorModifier(colorOption: selectedColor))
+                            .blur(radius: isLight ? 20 : 0)
+                            .opacity(isLight ? 0.7 : 1)
+                    }
                     
                     // Sharp text on top
-                    Text(text)
-                        .font(.custom(selectedFont, size: textSize * 100))
-                        .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                    if strokeSize > 0 {
+                        StrokeText(
+                            text: text,
+                            width: strokeSize,
+                            color: outlineEnabled ? selectedOutlineColor.color : .white,
+                            font: .custom(selectedFont, size: textSize * 100),
+                            fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
+                        )
                         .modifier(ColorModifier(colorOption: selectedColor))
                         .brightness(0.1)
                         .opacity(isFlash && !isFlashing ? 0.3 : 1.0)
-                  }
+                    } else {
+                        Text(text)
+                            .font(.custom(selectedFont, size: textSize * 100))
+                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                            .modifier(ColorModifier(colorOption: selectedColor))
+                            .brightness(0.1)
+                            .opacity(isFlash && !isFlashing ? 0.3 : 1.0)
+                    }
+                }
                     .scaleEffect(x: isMirror ? -1 : 1, y: 1) // Mirror effect
                     .frame(height: 200)
                     .fixedSize()
-                    .offset(x: isMirror ? show ?  1160 : -500 : show ? -500 : 1160)
-                    .rotationEffect(.degrees(isMirror ? 90 : -270))
+                    .background { GeometryReader { textgeometry -> Color in
+                        DispatchQueue.main.async {
+                            self.textWidth = textgeometry.size.width
+                        }
+                        return Color.clear
+                    }
+                    }
+                    .offset(x: getOffsetX(), y: getOffsetY())
+                    .rotationEffect(.degrees(getRotation()))
                     .position(x: geo.size.width / 2)
-                    .mask {
-                        getShapeImage()
-                            .frame(width: geo.size.width, height: geo.size.height)
+                    .if(!isHD) { view in
+                        view.mask {
+                            getShapeImage()
+                                .frame(width: geo.size.width, height: geo.size.height)
+                        }
                     }
                     .onAppear() {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                            offset = geo.size.height + textSize / 2
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
-                                offset = -textSize / 2
-                            }
-                        }
+                               switch selectedAlignment {
+                               case "up":
+                                   offsetx = geo.size.height + textWidth / 2
+                               case "down":
+                                   offsetx = -(geo.size.height + textWidth / 2)
+                               case "left":
+                                   offsety = geo.size.width + textWidth / 2
+                               case "right":
+                                   offsety = -(geo.size.width + textWidth / 2)
+                               default:
+                                   offsetx = isMirror ? -500 : 1160
+                               }
+                           }
+                           
+                           DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                               let animationDuration = 10.0 / textSpeed
+                               
+                               withAnimation(.linear(duration: animationDuration).repeatForever(autoreverses: false)) {
+                                   switch selectedAlignment {
+                                   case "up":
+                                       offsetx = -textWidth / 2
+                                   case "down":
+                                       offsetx = geo.size.height + textWidth / 2
+                                   case "left":
+                                       offsety = -textWidth / 2
+                                   case "right":
+                                       offsety = geo.size.width + textWidth / 2
+                                   default:
+                                       offsetx = isMirror ? 1160 : -500
+                                   }
+                               }
+                           }
+                           
                         
                         // Flash effect
                                        if isFlash {
@@ -170,7 +249,9 @@ struct ResultView: View {
         .navigationBarHidden(true)
         .ignoresSafeArea(.all)
         .onAppear(){
-            withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
+            let animationDuration = 10.0 / textSpeed
+            
+            withAnimation(.linear(duration: animationDuration).repeatForever(autoreverses: false)) {
                 show.toggle()
             }
         }
@@ -206,6 +287,45 @@ struct ResultView: View {
                 .resizable().scaledToFill()
         default: // "None" or any other case
             Image(.circle)
+        }
+    }
+    
+    private func getOffsetX() -> CGFloat {
+        switch selectedAlignment {
+        case "up", "down":
+            return offsetx
+        case "left", "right":
+            return 420 // Center horizontally for left/right scrolling
+        default:
+            return isMirror ? (show ? 1160 : -500) : (show ? -500 : 1160)
+        }
+    }
+
+    private func getOffsetY() -> CGFloat {
+        switch selectedAlignment {
+        case "left":
+            return show ? 300 : -300
+        case "right":
+            return show ? -300 : 300
+        case "up", "down":
+            return 0 // Center vertically for up/down scrolling
+        default:
+            return 0
+        }
+    }
+
+    private func getRotation() -> Double {
+        switch selectedAlignment {
+        case "left":
+            return -270
+        case "right":
+            return 90
+        case "up":
+            return -270
+        case "down":
+            return -270
+        default: // "None" - use mirror logic
+            return isMirror ? 90 : -270
         }
     }
 }

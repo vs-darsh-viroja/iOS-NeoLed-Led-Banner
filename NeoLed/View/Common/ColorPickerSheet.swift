@@ -34,7 +34,7 @@ struct ColorPickerSheet: View {
                     } label: {
                         Image(.crossIcon3)
                             .frame(width: ScaleUtility.scaledValue(12), height: ScaleUtility.scaledValue(12))
-                            .padding(.all, ScaleUtility.scaledSpacing(5))
+                            .padding(.all, ScaleUtility.scaledSpacing(8))
                             .background(Color(red: 0.46, green: 0.46, blue: 0.5).opacity(0.24))
                             .cornerRadius(30)
         

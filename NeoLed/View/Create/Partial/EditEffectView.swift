@@ -89,11 +89,26 @@ struct EditEffectView: View {
                                     
                                     Button {
                     
-                                        // Toggle selection
-                                        if isSelected {
-                                            selectedEffect.remove(effect.effectName)
-                                        } else {
-                                            selectedEffect.insert(effect.effectName)
+                                        // If "None" is clicked
+                                        if effect.effectName == "None" {
+                                            selectedEffect.removeAll()
+                                            selectedEffect.insert("None")
+                                        }
+                                        // If any other effect is clicked
+                                        else {
+                                            // Remove "None" if it exists
+                                            selectedEffect.remove("None")
+                                            
+                                            // Toggle the clicked effect
+                                            if isSelected {
+                                                selectedEffect.remove(effect.effectName)
+                                                // If no effects remain, add "None" back
+                                                if selectedEffect.isEmpty {
+                                                    selectedEffect.insert("None")
+                                                }
+                                            } else {
+                                                selectedEffect.insert(effect.effectName)
+                                            }
                                         }
                                         
                                     } label: {

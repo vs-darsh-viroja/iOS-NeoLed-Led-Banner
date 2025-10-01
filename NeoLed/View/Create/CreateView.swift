@@ -18,7 +18,7 @@ struct CreateView: View {
                        "Background"]
     
     // Text customization states
-     @State private var textSize: CGFloat = 1.0
+     @State private var textSize: CGFloat = 2.0
      @State private var strokeSize: CGFloat = 0.0
      @State private var selectedFont: String = FontManager.bricolageGrotesqueBoldFont
      @State private var selectedColor: ColorOption = ColorOption.predefinedColors[0]
@@ -33,13 +33,29 @@ struct CreateView: View {
      @State private var selectedShape: String = "None"
      @State private var textSpeed: CGFloat = 1.0
      @State var showPreview: Bool = false
+     @State var isHD: Bool = false 
     
     var body: some View {
         VStack(spacing:0) {
             
             VStack(spacing: ScaleUtility.scaledSpacing(23)) {
                 
-                TopView(text: $text, isInputFocused: $inputFocused) {
+                TopView(
+                    text: $text,
+                    selectedFont: $selectedFont,
+                    textSize: $textSize,
+                    strokeSize: $strokeSize,
+                    selectedColor: $selectedColor,
+                    selectedOutlineColor: $selectedOutlineColor,
+                    outlineEnabled: $outlineEnabled,
+                    hasCustomTextColor: $hasCustomTextColor,
+                    customTextColor: $customTextColor,
+                    selectedEffects: $selectedEffects,  // Add this line
+                    selectedAlignment: $selectedAlignment,
+                    selectedShape: $selectedShape,
+                    textSpeed: $textSpeed,
+                    isHD: $isHD,
+                    isInputFocused: $inputFocused) {
                     showPreview = true
                 }
                 
@@ -105,7 +121,8 @@ struct CreateView: View {
                         selectedOutlineColor: $selectedOutlineColor,
                         outlineEnabled: $outlineEnabled,
                         hasCustomTextColor: $hasCustomTextColor,
-                        customTextColor: $customTextColor
+                        customTextColor: $customTextColor,
+                        isHD: $isHD
                     )
                 }
                 
@@ -139,6 +156,7 @@ struct CreateView: View {
                   selectedAlignment: selectedAlignment,
                   selectedShape: selectedShape,
                   textSpeed: textSpeed,
+                  isHD: isHD,
                   onBack: {
                       showPreview = false
                   }

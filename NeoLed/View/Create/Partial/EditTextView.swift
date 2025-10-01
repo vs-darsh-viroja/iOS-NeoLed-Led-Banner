@@ -21,6 +21,7 @@ struct EditTextView: View {
        @Binding var outlineEnabled: Bool
        @Binding var hasCustomTextColor: Bool
        @Binding var customTextColor: UIColor
+       @Binding var isHD: Bool
     
    var fontOptions: [Fonts] = [
        Fonts(fontName: FontManager.bricolageGrotesqueBoldFont),
@@ -56,7 +57,7 @@ struct EditTextView: View {
                            .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(10)))
                            .foregroundColor(.white)
                        
-                       sizeCustomSlider(value: $textSize, range: 0.5...3.0)
+                       sizeCustomSlider(value: $textSize, range: 1.0...3.0)
                        
                        Text("A")
                            .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(16)))
@@ -169,6 +170,92 @@ struct EditTextView: View {
                        customColor: $customOutlineColor,
                        outlineEnabled: $outlineEnabled
                    )
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+               }
+               
+               VStack(spacing: ScaleUtility.scaledSpacing(15)) {
+                   Text("Banner Type")
+                      .font(FontManager.bricolageGrotesqueMediumFont(size: 13.5942))
+                     .kerning(0.40783)
+                     .foregroundColor(Color.primaryApp.opacity(0.5))
+                     .frame(maxWidth: .infinity, alignment: .topLeading)
+                     .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                   
+                   HStack(spacing: ScaleUtility.scaledSpacing(10)) {
+                       
+                       Button {
+                           isHD = false
+                       } label: {
+                           RoundedRectangle(cornerRadius: 5)
+                               .frame(width: ScaleUtility.scaledValue(102), height: ScaleUtility.scaledValue(34))
+                               .foregroundColor(Color.clear)
+                               .background {
+                                   if !isHD {
+                                       EllipticalGradient(
+                                        stops: [
+                                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                                        ],
+                                        center: UnitPoint(x: 0.36, y: 0.34)
+                                       )
+                                   }
+                                   else {
+                                       
+                                       Color(red: 0.26, green: 0.25, blue: 0.25).opacity(0.5)
+                                   }
+                               }
+                               .cornerRadius(5)
+                               .overlay {
+                                   Text("LED")
+                                       .font(FontManager.bricolageGrotesqueRegularFont(size: 14))
+                                       .kerning(0.42)
+                                       .multilineTextAlignment(.center)
+                                       .foregroundColor(.white)
+                               }
+                               .overlay {
+                                   RoundedRectangle(cornerRadius: 4)
+                                       .stroke(!isHD  ? Color.accent : Color.clear, lineWidth: 1)
+                               }
+                       }
+
+                       
+                       Button {
+                           isHD = true
+                       } label: {
+                           RoundedRectangle(cornerRadius: 5)
+                               .frame(width: ScaleUtility.scaledValue(102), height: ScaleUtility.scaledValue(34))
+                               .foregroundColor(Color.clear)
+                               .background {
+                                   if isHD {
+                                       EllipticalGradient(
+                                        stops: [
+                                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                                        ],
+                                        center: UnitPoint(x: 0.36, y: 0.34)
+                                       )
+                                   }
+                                   else {
+                                       
+                                       Color(red: 0.26, green: 0.25, blue: 0.25).opacity(0.5)
+                                   }
+                               }
+                               .cornerRadius(5)
+                               .overlay {
+                                   Text("HD")
+                                       .font(FontManager.bricolageGrotesqueRegularFont(size: 14))
+                                       .kerning(0.42)
+                                       .multilineTextAlignment(.center)
+                                       .foregroundColor(.white)
+                               }
+                               .overlay {
+                                   RoundedRectangle(cornerRadius: 5)
+                                       .stroke(isHD  ? Color.accent : Color.clear, lineWidth: 1)
+                               }
+                       }
+                       
+                   }
+                   .frame(maxWidth: .infinity, alignment: .topLeading)
                    .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                }
            }
