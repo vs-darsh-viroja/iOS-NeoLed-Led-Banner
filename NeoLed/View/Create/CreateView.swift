@@ -24,8 +24,10 @@ struct CreateView: View {
      @State private var selectedColor: ColorOption = ColorOption.predefinedColors[1]
      @State private var selectedOutlineColor: OutlineColorOption = OutlineColorOption.predefinedOutlineColors[0]
      @State private var outlineEnabled = false
+     @State private var backgroundEnabled = false
      @State private var hasCustomTextColor = false
      @State private var customTextColor: UIColor = .white
+     @State private var selectedBgColor: OutlineColorOption = OutlineColorOption.predefinedOutlineColors[0]
      
      // Effect customization states
      @State private var selectedEffects: Set<String> = ["None"]
@@ -34,11 +36,11 @@ struct CreateView: View {
      @State private var textSpeed: CGFloat = 1.0
      @State var showPreview: Bool = false
      @State var isHD: Bool = false 
-    
+     @State var selectedTab: Int = 0
     var body: some View {
         VStack(spacing:0) {
             
-            VStack(spacing: ScaleUtility.scaledSpacing(23)) {
+            VStack(spacing: ScaleUtility.scaledSpacing(20)) {
                 
                 TopView(
                     text: $text,
@@ -55,65 +57,29 @@ struct CreateView: View {
                     selectedShape: $selectedShape,
                     textSpeed: $textSpeed,
                     isHD: $isHD,
+                    selectedBgColor: $selectedBgColor,
+                    backgroundEnabled: $backgroundEnabled,
                     isInputFocused: $inputFocused) {
-                    showPreview = true
-                }
-                
-                
-                HStack(spacing: ScaleUtility.scaledSpacing(10)) {
-                    ForEach(Array(editOptions.enumerated()), id: \.offset) { index, option in
-                        Button {
-                            selectedEditOption = option
-                        } label: {
-                            RoundedRectangle(cornerRadius: 5)
-                                .frame(width: ScaleUtility.scaledValue(102), height: ScaleUtility.scaledValue(34))
-                                .foregroundColor(Color.clear)
-                                .background {
-                                    if selectedEditOption == option {
-                                        EllipticalGradient(
-                                            stops: [
-                                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
-                                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
-                                            ],
-                                            center: UnitPoint(x: 0.36, y: 0.34)
-                                        )
-                                    }
-                                    else {
-                                        Color.appGrey
-                                    }
-                                }
-                                .cornerRadius(5)
-                                .overlay {
-                                    Text(option)
-                                        .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
-                                        .kerning(0.42)
-                                        .multilineTextAlignment(.center)
-                                        .foregroundColor(Color.primaryApp)
-                                }
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .stroke( selectedEditOption == option ? Color.accent : Color.clear, lineWidth: 1)
-                                    
-                                }
+                        if text != "" {
+                            showPreview = true
                         }
-                    }
                 }
+                
+                CustomTabPicker(selectedTab: $selectedTab, tabs: ["Text","Background"])
+                
+
             }
             
             ScrollView {
                 
                 Spacer()
-                    .frame(height: ScaleUtility.scaledValue(15))
+                    .frame(height: ScaleUtility.scaledValue(25))
                 
-                if selectedEditOption == "Effect" {
-                    EditEffectView(selectedEffect: $selectedEffects,
-                                   selectedAlignment: $selectedAlignment,
-                                   selectedShape: $selectedShape,
-                                   textSpeed: $textSpeed)
                 
-                }
-                else if selectedEditOption == "Text" {
+                if selectedTab == 0 {
+                    
                     EditTextView(
+                        selectedEffect: $selectedEffects,
                         textSize: $textSize,
                         strokeSize: $strokeSize,
                         selectedFont: $selectedFont,
@@ -122,9 +88,20 @@ struct CreateView: View {
                         outlineEnabled: $outlineEnabled,
                         hasCustomTextColor: $hasCustomTextColor,
                         customTextColor: $customTextColor,
-                        isHD: $isHD
-                    )
+                        textSpeed: $textSpeed,
+                        selectedAlignment: $selectedAlignment)
+              
                 }
+                else {
+                    
+                    EditBackgroundView(isHD: $isHD,
+                                       selectedShape: $selectedShape,
+                                       selectedBgColor: $selectedBgColor,
+                                       backgroundEnabled: $backgroundEnabled)
+                    
+                    
+                }
+      
                 
                 Spacer()
                     .frame(height: ScaleUtility.scaledValue(105))
@@ -149,6 +126,8 @@ struct CreateView: View {
                   strokeSize: strokeSize,
                   selectedColor: selectedColor,
                   selectedOutlineColor: selectedOutlineColor,
+                  selectedBgColor: selectedBgColor,
+                  backgroundEnabled: backgroundEnabled,
                   outlineEnabled: outlineEnabled,
                   hasCustomTextColor: hasCustomTextColor,
                   customTextColor: customTextColor,

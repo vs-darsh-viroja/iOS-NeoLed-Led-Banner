@@ -35,3 +35,13 @@ struct ScaleUtility {
         }
     }
 }
+extension View {
+    func scaledFrame(baseWidth: CGFloat? = nil, baseHeight: CGFloat? = nil, alignment: Alignment? = nil) -> some View {
+        let scaledWidth = baseWidth.flatMap { ScaleUtility.scaledValue($0) }.flatMap { $0 > 0 ? $0 : nil }
+        let scaledHeight = baseHeight.flatMap { ScaleUtility.scaledValue($0) }.flatMap { $0 > 0 ? $0 : nil }
+        
+        return self.frame(width: scaledWidth, height: scaledHeight, alignment: alignment ?? .center)
+    }
+}
+
+

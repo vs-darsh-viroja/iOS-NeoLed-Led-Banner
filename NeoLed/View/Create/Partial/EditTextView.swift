@@ -11,8 +11,19 @@ struct Fonts {
    let fontName: String
 }
 
+
+struct Effect {
+    let effectName: String
+    let effectImage: String
+}
+
+struct TextAlignments {
+    let alignmentName: String
+    let alignmentImage: String
+}
+
 struct EditTextView: View {
-   
+       @Binding var selectedEffect: Set<String>
        @Binding var textSize: CGFloat
        @Binding var strokeSize: CGFloat
        @Binding var selectedFont: String
@@ -21,7 +32,8 @@ struct EditTextView: View {
        @Binding var outlineEnabled: Bool
        @Binding var hasCustomTextColor: Bool
        @Binding var customTextColor: UIColor
-       @Binding var isHD: Bool
+       @Binding var textSpeed: CGFloat
+       @Binding var selectedAlignment: String
     
    var fontOptions: [Fonts] = [
        Fonts(fontName: FontManager.bricolageGrotesqueBoldFont),
@@ -33,10 +45,28 @@ struct EditTextView: View {
        Fonts(fontName: FontManager.brushScriptStd),
    ]
    
+    var effectOptions: [Effect] = [
+        Effect(effectName: "None", effectImage: "noSelectionIcon"),
+        Effect(effectName: "Bold", effectImage: "boldIcon"),
+        Effect(effectName: "Italic", effectImage: "italicIcon"),
+        Effect(effectName: "Glow", effectImage: "lightIcon"),
+        Effect(effectName: "Blink", effectImage: "flashIcon"),
+        Effect(effectName: "Mirror", effectImage: "mirrorIcon"),
+    ]
+    
+    var alignmentOptions: [TextAlignments] = [
+        TextAlignments(alignmentName: "None", alignmentImage: "noSelectionIcon"),
+        TextAlignments(alignmentName: "left", alignmentImage: "leftArrowIcon"),
+        TextAlignments(alignmentName: "right", alignmentImage: "rightArrowIcon"),
+        TextAlignments(alignmentName: "up", alignmentImage: "upArrowIcon"),
+        TextAlignments(alignmentName: "down", alignmentImage: "downArrowIcon"),
+
+    ]
 
     
    // Color picker states
    @State private var showTextColorPicker = false
+    
    @State private var showOutlineColorPicker = false
 
    @State private var customOutlineColor: UIColor = .blue
@@ -48,47 +78,95 @@ struct EditTextView: View {
    var body: some View {
        VStack(spacing: 0) {
            VStack(spacing: ScaleUtility.scaledSpacing(20)) {
+               
                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
-                   Text("Text Size")
-                       .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
-                       .kerning(0.42)
-                       .foregroundColor(.primaryApp.opacity(0.5))
-                       .frame(maxWidth: .infinity, alignment: .topLeading)
+                   Text("Text Effect")
+                       .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
+                       .kerning(0.40783)
+                       .foregroundColor(.white.opacity(0.5))
+                       .frame(maxWidth: .infinity,alignment: .leading)
+                       .padding(.leading, ScaleUtility.scaledSpacing(30))
                    
-                   HStack(spacing: ScaleUtility.scaledSpacing(17)) {
-                       Text("A")
-                           .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(10)))
-                           .foregroundColor(.white)
+                   ScrollView(.horizontal) {
                        
-                       sizeCustomSlider(value: $textSize, range: 1.0...3.0)
-                       
-                       Text("A")
-                           .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(16)))
-                           .foregroundColor(.white)
-                   }
-               }
-               .padding(.horizontal, ScaleUtility.scaledSpacing(30))
-
-               VStack(spacing: ScaleUtility.scaledSpacing(15)) {
-                   Text("Stroke Size")
-                       .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
-                       .kerning(0.42)
-                       .foregroundColor(.primaryApp.opacity(0.5))
-                       .frame(maxWidth: .infinity, alignment: .topLeading)
+                       HStack(spacing: ScaleUtility.scaledSpacing(10)) {
+                           
+                           ForEach(Array(effectOptions.enumerated()), id: \.offset) { _, effect in
+                               
+                               VStack(spacing: ScaleUtility.scaledSpacing(6)) {
+                                   
+                                   let isSelected = selectedEffect.contains(effect.effectName)
+                                   
+                                   Button {
                    
-                   HStack(spacing: ScaleUtility.scaledSpacing(17)) {
-                       Text("A")
-                           .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(10)))
-                           .foregroundColor(.white)
-                       
-                       sizeCustomSlider(value: $strokeSize, range: 0...10)
-                       
-                       Text("A")
-                           .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(16)))
-                           .foregroundColor(.white)
+                                       // If "None" is clicked
+                                       if effect.effectName == "None" {
+                                           selectedEffect.removeAll()
+                                           selectedEffect.insert("None")
+                                       }
+                                       // If any other effect is clicked
+                                       else {
+                                           // Remove "None" if it exists
+                                           selectedEffect.remove("None")
+                                           
+                                           // Toggle the clicked effect
+                                           if isSelected {
+                                               selectedEffect.remove(effect.effectName)
+                                               // If no effects remain, add "None" back
+                                               if selectedEffect.isEmpty {
+                                                   selectedEffect.insert("None")
+                                               }
+                                           } else {
+                                               selectedEffect.insert(effect.effectName)
+                                           }
+                                       }
+                                       
+                                   } label: {
+                                       
+                                       Image(effect.effectImage)
+                                           .resizable()
+                                           .frame(width: effect.effectName == "Italic" 
+                                                  ? ScaleUtility.scaledValue(6)
+                                                  : ScaleUtility.scaledValue(16),
+                                                  height: ScaleUtility.scaledValue(16))
+                                           .padding(.all, ScaleUtility.scaledSpacing(13))
+                                           .background {
+                                               if isSelected {
+                                                   EllipticalGradient(
+                                                       stops: [
+                                                           Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                                           Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                                                       ],
+                                                       center: UnitPoint(x: 0.36, y: 0.34)
+                                                   )
+                                               }
+                                               else {
+                                                   Color.black
+                                               }
+                                           }
+                                           .cornerRadius(5)
+                                           .overlay {
+                                               RoundedRectangle(cornerRadius: 5)
+                                                   .stroke( isSelected ? Color.accent : Color.clear, lineWidth: 1)
+                                               
+                                           }
+                                   }
+                                       
+                                       Text(effect.effectName)
+                                           .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(12)))
+                                           .foregroundColor(Color.primaryApp)
+                                   
+                               }
+                           }
+                           
+                           
+                       }
+                       .frame(alignment: .leading)
+                       .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                    }
+                   
                }
-               .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+               
                
                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                    Text("Font Style")
@@ -133,8 +211,61 @@ struct EditTextView: View {
                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                    }
                }
+
+               VStack(spacing: ScaleUtility.scaledSpacing(15)) {
+                   Text("Text Size")
+                       .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
+                       .kerning(0.42)
+                       .foregroundColor(.primaryApp.opacity(0.5))
+                       .frame(maxWidth: .infinity, alignment: .topLeading)
+                   
+                   HStack(spacing: ScaleUtility.scaledSpacing(17)) {
+                       Text("A")
+                           .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(10)))
+                           .foregroundColor(.white)
+                       
+                       sizeCustomSlider(value: $textSize, range: 1.0...3.0)
+                       
+                       Text("A")
+                           .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(16)))
+                           .foregroundColor(.white)
+                   }
+               }
+               .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+
+               VStack(spacing: ScaleUtility.scaledSpacing(15)) {
+                   Text("Stroke Size")
+                       .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
+                       .kerning(0.42)
+                       .foregroundColor(.primaryApp.opacity(0.5))
+                       .frame(maxWidth: .infinity, alignment: .topLeading)
+                   
+                   HStack(spacing: ScaleUtility.scaledSpacing(17)) {
+                       
+                       StrokeText(text: "A",
+                                 width: 0.5,
+                                 color: Color.primaryApp,
+                                  font: FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(16)),
+                                 fontWeight: .regular) // Use .regular, .bold, .heavy, etc.
+                       
+                       
+                       sizeCustomSlider(value: $strokeSize, range: 0...10)
+                       
+                       
+                       StrokeText(text: "A",
+                                  width: 1.0,
+                                 color: Color.primaryApp,
+                                  font: FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(16)),
+                                 fontWeight: .regular) // Use .regular, .bold, .heavy, etc.
+                       
+
+                   }
+               }
+               .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+          
+      
                
-               VStack(spacing: ScaleUtility.scaledSpacing(16)) {
+               VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                    Text("Text Color")
                        .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
                        .kerning(0.40783)
@@ -167,6 +298,7 @@ struct EditTextView: View {
                
                ScrollView(.horizontal, showsIndicators: false) {
                    OutlineColorPickerView(
+                       text: "Stroke Color",
                        selectedOutlineColor: $selectedOutlineColor,
                        showColorPicker: $showOutlineColorPicker,
                        hasCustomColor: $hasCustomOutlineColor,
@@ -176,91 +308,78 @@ struct EditTextView: View {
                    .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                }
                
+               
                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
-                   Text("Banner Type")
-                      .font(FontManager.bricolageGrotesqueMediumFont(size: 13.5942))
-                     .kerning(0.40783)
-                     .foregroundColor(Color.primaryApp.opacity(0.5))
-                     .frame(maxWidth: .infinity, alignment: .topLeading)
-                     .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                   Text("Text Speed")
+                       .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
+                       .kerning(0.40783)
+                       .foregroundColor(.white.opacity(0.5))
+                       .frame(maxWidth: .infinity,alignment: .leading)
+                       .padding(.leading, ScaleUtility.scaledSpacing(30))
                    
-                   HStack(spacing: ScaleUtility.scaledSpacing(10)) {
+                   ReusableCustomSlider(value: $textSpeed, range: 0.5...5.0)
+                     
+              
+               }
+               
+               
+               VStack(spacing: ScaleUtility.scaledSpacing(15)) {
+                   Text("Scroll Direction")
+                       .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
+                       .kerning(0.40783)
+                       .foregroundColor(Color.primaryApp.opacity(0.5))
+                       .frame(maxWidth: .infinity, alignment: .topLeading)
+                       .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                   
+                   ScrollView(.horizontal) {
                        
-                       Button {
-                           isHD = false
-                       } label: {
-                           RoundedRectangle(cornerRadius: 5)
-                               .frame(width: ScaleUtility.scaledValue(102), height: ScaleUtility.scaledValue(34))
-                               .foregroundColor(Color.clear)
-                               .background {
-                                   if !isHD {
-                                       EllipticalGradient(
-                                        stops: [
-                                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
-                                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
-                                        ],
-                                        center: UnitPoint(x: 0.36, y: 0.34)
-                                       )
+                       HStack(spacing: ScaleUtility.scaledSpacing(10)) {
+                           ForEach(Array(alignmentOptions.enumerated()), id: \.offset) { index, align in
+                               
+                               Button {
+                                   DispatchQueue.main.async {
+                                       selectedAlignment = ""
+                                       selectedAlignment = align.alignmentName
                                    }
-                                   else {
-                                       
-                                       Color(red: 0.26, green: 0.25, blue: 0.25).opacity(0.5)
-                                   }
+                               } label: {
+                                   Image(align.alignmentImage)
+                                       .resizable()
+                                       .frame(width: ScaleUtility.scaledValue(16), height: ScaleUtility.scaledValue(16))
+                                       .padding(.all, ScaleUtility.scaledSpacing(13))
+                                       .background {
+                                           if selectedAlignment == align.alignmentName {
+                                               EllipticalGradient(
+                                                stops: [
+                                                    Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                                    Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                                                ],
+                                                center: UnitPoint(x: 0.36, y: 0.34)
+                                               )
+                                           }
+                                           else {
+                                               Color.appGrey
+                                           }
+                                       }
+                                       .cornerRadius(5)
+                                       .overlay {
+                                           RoundedRectangle(cornerRadius: 5)
+                                               .stroke( selectedAlignment == align.alignmentName ? Color.accent : Color.clear, lineWidth: 1)
+                                           
+                                       }
                                }
-                               .cornerRadius(5)
-                               .overlay {
-                                   Text("LED")
-                                       .font(FontManager.bricolageGrotesqueRegularFont(size: 14))
-                                       .kerning(0.42)
-                                       .multilineTextAlignment(.center)
-                                       .foregroundColor(.white)
-                               }
-                               .overlay {
-                                   RoundedRectangle(cornerRadius: 4)
-                                       .stroke(!isHD  ? Color.accent : Color.clear, lineWidth: 1)
-                               }
+                               
+                               
+                           }
                        }
-
                        
-                       Button {
-                           isHD = true
-                       } label: {
-                           RoundedRectangle(cornerRadius: 5)
-                               .frame(width: ScaleUtility.scaledValue(102), height: ScaleUtility.scaledValue(34))
-                               .foregroundColor(Color.clear)
-                               .background {
-                                   if isHD {
-                                       EllipticalGradient(
-                                        stops: [
-                                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
-                                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
-                                        ],
-                                        center: UnitPoint(x: 0.36, y: 0.34)
-                                       )
-                                   }
-                                   else {
-                                       
-                                       Color(red: 0.26, green: 0.25, blue: 0.25).opacity(0.5)
-                                   }
-                               }
-                               .cornerRadius(5)
-                               .overlay {
-                                   Text("HD")
-                                       .font(FontManager.bricolageGrotesqueRegularFont(size: 14))
-                                       .kerning(0.42)
-                                       .multilineTextAlignment(.center)
-                                       .foregroundColor(.white)
-                               }
-                               .overlay {
-                                   RoundedRectangle(cornerRadius: 5)
-                                       .stroke(isHD  ? Color.accent : Color.clear, lineWidth: 1)
-                               }
-                       }
+                       
                        
                    }
-                   .frame(maxWidth: .infinity, alignment: .topLeading)
+                   .frame(alignment: .leading)
                    .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                }
+          
+
            }
        }
        .sheet(isPresented: $showTextColorPicker) {

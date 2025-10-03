@@ -12,6 +12,8 @@ struct ResultView: View {
     let strokeSize: CGFloat
     let selectedColor: ColorOption
     let selectedOutlineColor: OutlineColorOption
+    let selectedBgColor: OutlineColorOption
+    let backgroundEnabled: Bool
     let outlineEnabled: Bool
     let hasCustomTextColor: Bool
     let customTextColor: UIColor
@@ -22,10 +24,10 @@ struct ResultView: View {
     let textSpeed: CGFloat
     let isHD: Bool
     
-     var isBold: Bool { selectedEffects.contains("Bold") }
-     var isLight: Bool { selectedEffects.contains("Light") }
-     var isFlash: Bool { selectedEffects.contains("Flash") }
-     var isMirror: Bool { selectedEffects.contains("Mirror") }
+    var isBold: Bool { selectedEffects.contains("Bold") }
+    var isLight: Bool { selectedEffects.contains("Light") }
+    var isFlash: Bool { selectedEffects.contains("Flash") }
+    var isMirror: Bool { selectedEffects.contains("Mirror") }
     var onBack: () -> Void
    
     @State  var isFlashing = false
@@ -295,7 +297,16 @@ struct ResultView: View {
             .padding(.top,ScaleUtility.scaledSpacing(59))
             
         }
-        .background(Color.black.ignoresSafeArea(.all))
+        .background {
+            if backgroundEnabled {
+                selectedBgColor.color
+            }
+            else {
+                Color.secondaryApp
+            }
+           
+        }
+        .ignoresSafeArea(.all)
         .navigationBarHidden(true)
         .ignoresSafeArea(.all)
         .onAppear(){
@@ -337,20 +348,28 @@ struct ResultView: View {
         case "circle":
             Image(.circle)
                 .resizable().scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
         case "square":
             Image(.square)
                 .resizable().scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
         case "heart":
             Image(.heart)
                 .resizable().scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
         case "star":
             Image(.star)
-                .resizable().scaledToFill()
+                .resizable()
+                .scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
         case "ninjaStar":
             Image(.ninjaStar)
                 .resizable().scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
         default: // "None" or any other case
             Image(.circle)
+                .resizable().scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
         }
     }
     

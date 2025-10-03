@@ -19,12 +19,13 @@ struct TopView:View {
     @Binding var outlineEnabled: Bool
     @Binding var hasCustomTextColor: Bool
     @Binding var customTextColor: UIColor
-
     @Binding var selectedEffects: Set<String>  // Keep this
     @Binding var selectedAlignment: String
     @Binding var selectedShape: String
     @Binding var textSpeed: CGFloat
     @Binding var isHD: Bool
+    @Binding var selectedBgColor: OutlineColorOption
+    @Binding var backgroundEnabled: Bool
     
     private var isBold: Bool { selectedEffects.contains("Bold") }
     private var isLight: Bool { selectedEffects.contains("Light") }
@@ -33,6 +34,7 @@ struct TopView:View {
     
     @FocusState.Binding var isInputFocused: Bool
     var showPreview: () -> Void
+    
     
     @State var offsetx: CGFloat = 0
     @State var offsety: CGFloat = 0
@@ -50,14 +52,21 @@ struct TopView:View {
                     .foregroundColor(.clear)
                     .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
                     .frame(maxWidth: .infinity)
-                    .background(Color.black)
+                    .background {
+                        if backgroundEnabled {
+                            selectedBgColor.color
+                        }
+                        else {
+                            Color.secondaryApp
+                        }
+                    }
                     .cornerRadius(10)
                     .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                     .overlay {
                         if text == "" {
                             Text("Enter Your Text")
                                 .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(36)))
-                                .foregroundColor(.black)
+                                .foregroundColor(Color.primaryApp)
                                 .padding(.horizontal,ScaleUtility.scaledSpacing(36))
                         }
                     }
@@ -243,42 +252,7 @@ struct TopView:View {
                 .clipped()
                 .padding(.horizontal, ScaleUtility.scaledSpacing(20))
             }
-            
-//            Rectangle()
-//                .foregroundColor(.clear)
-//                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(147))
-//                .frame(maxWidth: .infinity)
-//                .background(
-//                    LinearGradient(
-//                        stops: [
-//                            Gradient.Stop(color: Color(red: 1, green: 0.73, blue: 0.79), location: 0.00),
-//                            Gradient.Stop(color: Color(red: 1, green: 0.84, blue: 0.6), location: 1.00),
-//                        ],
-//                        startPoint: UnitPoint(x: 0.5, y: 0),
-//                        endPoint: UnitPoint(x: 0.5, y: 1)
-//                    )
-//                )
-//                .cornerRadius(10)
-//                .overlay {
-//                    
-//                    if text == "" {
-//                        Text("Enter Your Text")
-//                            .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(36)))
-//                            .foregroundColor(.black)
-//                            .padding(.horizontal)
-//                    }
-//                    else {
-//                        
-//                        ScrollView {
-//                            Text(text)
-//                                .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(36)))
-//                                .foregroundColor(.black)
-//                                .padding(.horizontal)
-//                            
-//                        }
-//                    }
-//                }
-//                .padding(.horizontal,ScaleUtility.scaledSpacing(20))
+
             
             HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                 

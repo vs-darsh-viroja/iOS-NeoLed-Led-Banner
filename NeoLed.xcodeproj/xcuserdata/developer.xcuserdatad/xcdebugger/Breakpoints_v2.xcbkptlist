@@ -14,8 +14,8 @@
             filePath = "NeoLed/View/Create/Partial/TopView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "464"
-            endingLineNumber = "464"
+            startingLineNumber = "438"
+            endingLineNumber = "438"
             landmarkName = "getPreviewOffsetX(geo:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "NeoLed/View/Create/Partial/TopView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "466"
-            endingLineNumber = "466"
+            startingLineNumber = "440"
+            endingLineNumber = "440"
             landmarkName = "getPreviewOffsetX(geo:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -46,8 +46,8 @@
             filePath = "NeoLed/View/Create/Partial/TopView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "371"
-            endingLineNumber = "371"
+            startingLineNumber = "345"
+            endingLineNumber = "345"
             landmarkName = "restartAnimation(geo:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -62,8 +62,8 @@
             filePath = "NeoLed/View/Create/Partial/TopView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "369"
-            endingLineNumber = "369"
+            startingLineNumber = "343"
+            endingLineNumber = "343"
             landmarkName = "restartAnimation(geo:)"
             landmarkType = "7">
          </BreakpointContent>

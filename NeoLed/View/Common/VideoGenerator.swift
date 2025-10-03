@@ -210,8 +210,9 @@ extension ResultView {
         let videoWidth: CGFloat = 1080
         let videoHeight: CGFloat = 1920
         
-        // Scale factor: assuming original design is for ~390 width (iPhone standard)
-        let scaleFactor = videoWidth / 390.0
+        // Scale factor: increase significantly for better video coverage
+        // Original design ~390x844, video is 1080x1920 - scale based on height for better vertical coverage
+        let scaleFactor = videoHeight / 844.0 * 1.5 // Extra 1.5x to fill more space
         let scaledTextSize = textSize * 100 * scaleFactor
         let scaledStrokeSize = strokeSize * scaleFactor
         
@@ -312,7 +313,7 @@ extension ResultView {
             .fixedSize()
             .offset(x: animatedOffsetX, y: animatedOffsetY)
             .rotationEffect(.degrees(getRotation()))
-            .position(x: videoWidth / 2, y: videoHeight / 2)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .if(!isHD) { view in
                 view.mask {
                     getShapeImageForVideo()
@@ -410,5 +411,4 @@ struct ShareSheet: UIViewControllerRepresentable {
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
-
 

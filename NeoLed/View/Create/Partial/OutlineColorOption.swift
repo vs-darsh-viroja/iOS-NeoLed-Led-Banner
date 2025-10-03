@@ -43,6 +43,7 @@ extension OutlineColorOption {
 // =============================================================================
 
 struct OutlineColorPickerView: View {
+    var text: String
     @Binding var selectedOutlineColor: OutlineColorOption
     @Binding var showColorPicker: Bool
     @Binding var hasCustomColor: Bool
@@ -50,9 +51,9 @@ struct OutlineColorPickerView: View {
     @Binding var outlineEnabled: Bool
     
     var body: some View {
-        VStack(spacing: ScaleUtility.scaledSpacing(16)) {
+        VStack(spacing: ScaleUtility.scaledSpacing(15)) {
             
-            Text("Outline")
+            Text(text)
                 .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
                 .kerning(0.40783)
                 .foregroundColor(Color.primaryApp.opacity(0.5))

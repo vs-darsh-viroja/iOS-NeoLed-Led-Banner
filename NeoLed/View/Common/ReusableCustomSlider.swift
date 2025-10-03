@@ -27,19 +27,19 @@ struct ReusableCustomSlider: View {
         ZStack(alignment: .leading) {
             // Track background
             Capsule()
-                .fill(.white.opacity(0.2))
+                .fill(Color.secondaryBG)
                 .frame(width: sliderWidth, height: trackHeight)
 
             // Filled progress
             Capsule()
-                .fill(Color.white.opacity(0.7))
+                .fill(Color.white.opacity(0.5))
                 .frame(width: sliderWidth * progress, height: trackHeight)
 
             // Thumb
 
             Circle()
                 .fill(Color.white)
-                .frame(width: ScaleUtility.scaledValue(17), height: ScaleUtility.scaledValue(17))
+                .frame(width: ScaleUtility.scaledValue(18), height: ScaleUtility.scaledValue(18))
                 .overlay(
                     Circle()
                         .fill(Color.black)
