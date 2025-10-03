@@ -42,6 +42,9 @@ struct EditTextView: View {
    @State private var customOutlineColor: UIColor = .blue
    @State private var hasCustomOutlineColor = false
     
+
+
+    
    var body: some View {
        VStack(spacing: 0) {
            VStack(spacing: ScaleUtility.scaledSpacing(20)) {

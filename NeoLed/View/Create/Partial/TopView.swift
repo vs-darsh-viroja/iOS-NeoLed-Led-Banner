@@ -48,7 +48,7 @@ struct TopView:View {
                 
                 Rectangle()
                     .foregroundColor(.clear)
-                    .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(147))
+                    .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
                     .frame(maxWidth: .infinity)
                     .background(Color.black)
                     .cornerRadius(10)
@@ -76,7 +76,52 @@ struct TopView:View {
                     }
                         
                     ZStack {
-                        // Blurred glow layers behind
+                        // Light effect - multiple glow layers
+                        if isLight {
+                            // Outer glow
+                            Group {
+                                if strokeSize > 0.2 {
+                                    StrokeText(
+                                        text: text,
+                                        width: strokeSize,
+                                        color: outlineEnabled ? selectedOutlineColor.color : .white,
+                                        font: .custom(selectedFont, size: textSize * 100),
+                                        fontWeight: .light
+                                    )
+                                    .modifier(ColorModifier(colorOption: selectedColor))
+                                } else {
+                                    Text(text)
+                                        .font(.custom(selectedFont, size: textSize * 100))
+                                        .fontWeight(.light)
+                                        .modifier(ColorModifier(colorOption: selectedColor))
+                                }
+                            }
+                            .blur(radius: 12)
+                            .opacity(0.5)
+                            
+                            // Inner glow
+                            Group {
+                                if strokeSize > 0.2 {
+                                    StrokeText(
+                                        text: text,
+                                        width: strokeSize,
+                                        color: outlineEnabled ? selectedOutlineColor.color : .white,
+                                        font: .custom(selectedFont, size: textSize * 100),
+                                        fontWeight: .light
+                                    )
+                                    .modifier(ColorModifier(colorOption: selectedColor))
+                                } else {
+                                    Text(text)
+                                        .font(.custom(selectedFont, size: textSize * 100))
+                                        .fontWeight(.light)
+                                        .modifier(ColorModifier(colorOption: selectedColor))
+                                }
+                            }
+                            .blur(radius: 6)
+                            .opacity(0.7)
+                        }
+                        
+                        // Main text layer (for all effects)
                         if strokeSize > 0.2 {
                             StrokeText(
                                 text: text,
@@ -86,59 +131,40 @@ struct TopView:View {
                                 fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
                             )
                             .modifier(ColorModifier(colorOption: selectedColor))
-                            .blur(radius: isLight ? 2 : 0)
-                            .opacity(isLight ? 0.8 : 1)
+                            .blur(radius: isLight ? 1 : 0)
+                            .opacity(isFlash && !isFlashing ? 0.3 : 1.0)
                         } else {
                             Text(text)
                                 .font(.custom(selectedFont, size: textSize * 100))
                                 .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
                                 .modifier(ColorModifier(colorOption: selectedColor))
-                                .blur(radius: isLight ? 2 : 0)
-                                .opacity(isLight ? 0.8 : 1)
+                                .blur(radius: isLight ? 1 : 0)
+                                .opacity(isFlash && !isFlashing ? 0.3 : 1.0)
                         }
                         
-                        if strokeSize > 0.2 {
-                            StrokeText(
-                                text: text,
-                                width: strokeSize,
-                                color: outlineEnabled ? selectedOutlineColor.color : .white,
-                                font: .custom(selectedFont, size: textSize * 100),
-                                fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
-                            )
-                            .kerning(0.6)
-                            .modifier(ColorModifier(colorOption: selectedColor))
-                            .blur(radius: isLight ? 5 : 0)
-                            .opacity(isLight ? 0.9 : 1)
-                        } else {
-                            Text(text)
-                                .font(.custom(selectedFont, size: textSize * 100))
-                                .kerning(0.4)
-                                .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-                                .modifier(ColorModifier(colorOption: selectedColor))
-                                .blur(radius: isLight ? 5 : 0)
-                                .opacity(isLight ? 0.9 : 1)
+                        // Sharp center for Light effect
+                        if isLight {
+                            Group {
+                                if strokeSize > 0.2 {
+                                    StrokeText(
+                                        text: text,
+                                        width: strokeSize * 0.7,
+                                        color: outlineEnabled ? selectedOutlineColor.color : .white,
+                                        font: .custom(selectedFont, size: textSize * 100),
+                                        fontWeight: .light
+                                    )
+                                    .modifier(ColorModifier(colorOption: selectedColor))
+                                } else {
+                                    Text(text)
+                                        .font(.custom(selectedFont, size: textSize * 100))
+                                        .fontWeight(.light)
+                                        .modifier(ColorModifier(colorOption: selectedColor))
+                                }
+                            }
+                            .brightness(0.15)
+                            .opacity(0.9)
+                            .opacity(isFlash && !isFlashing ? 0.3 : 1.0)
                         }
-                        
-                        // Sharp text on top
-//                        if strokeSize > 0.2 {
-//                            StrokeText(
-//                                text: text,
-//                                width: strokeSize,
-//                                color: outlineEnabled ? selectedOutlineColor.color : .white,
-//                                font: .custom(selectedFont, size: textSize * 100),
-//                                fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
-//                            )
-//                            .modifier(ColorModifier(colorOption: selectedColor))
-//                            .brightness(0.1)
-//                            .opacity(isFlash && !isFlashing ? 0.3 : 1.0)
-//                        } else {
-//                            Text(text)
-//                                .font(.custom(selectedFont, size: textSize * 100))
-//                                .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-//                                .modifier(ColorModifier(colorOption: selectedColor))
-//                                .brightness(0.1)
-//                                .opacity(isFlash && !isFlashing ? 0.3 : 1.0)
-//                        }
                     }
                     .scaleEffect(x: isMirror ? -1 : 1, y: 1)
                     .frame(height: 50)
@@ -159,31 +185,51 @@ struct TopView:View {
                                 .frame(width: geo.size.width, height: geo.size.height)
                         }
                     }
-                    .onChange(of: textSpeed) { 
+                    .onChange(of: textSpeed) { _, _ in
+                        offsetx = 0
+                        offsety = 0
                         restartAnimation(geo: geo)
                     }
-                    .onChange(of: selectedAlignment) {
+                    .onChange(of: selectedAlignment) { _, _ in
+                        DispatchQueue.main.async {
+                            offsetx = 0
+                            offsety = 0
+                            restartAnimation(geo: geo)
+                        }
+                    }
+                    .onChange(of: text) { _, _ in
+                        offsetx = 0
+                        offsety = 0
                         restartAnimation(geo: geo)
                     }
-                    .onChange(of: text) {
+                    .onChange(of: selectedShape) { _, _ in
+                        offsetx = 0
+                        offsety = 0
                         restartAnimation(geo: geo)
                     }
-                    .onChange(of: selectedShape) {
+                    .onChange(of: textSize) { _, _ in
+                        offsetx = 0
+                        offsety = 0
                         restartAnimation(geo: geo)
                     }
-                    .onChange(of: textSize) {
+                    .onChange(of: strokeSize) { _, _ in
+                        offsetx = 0
+                        offsety = 0
                         restartAnimation(geo: geo)
                     }
-                    .onChange(of: strokeSize) {
+                    .onChange(of: isHD) { _, _ in
+                        offsetx = 0
+                        offsety = 0
                         restartAnimation(geo: geo)
                     }
-                    .onChange(of: selectedAlignment) {
-                        restartAnimation(geo: geo)
-                    }
-                    .onChange(of: isHD) {
+                    .onChange(of: selectedEffects) { _, _ in
+                        offsetx = 0
+                        offsety = 0
                         restartAnimation(geo: geo)
                     }
                     .onAppear() {
+                        offsetx = 0
+                        offsety = 0
                         restartAnimation(geo: geo)
                
                     }
@@ -193,7 +239,7 @@ struct TopView:View {
                     }
       
                 }
-                .frame(width: ScaleUtility.scaledValue(335), height: ScaleUtility.scaledValue(147))
+                .frame(width: ScaleUtility.scaledValue(335), height: ScaleUtility.scaledValue(167))
                 .clipped()
                 .padding(.horizontal, ScaleUtility.scaledSpacing(20))
             }
@@ -317,12 +363,12 @@ struct TopView:View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
             withAnimation(.linear(duration: 0)) {
                 switch selectedAlignment {
+                case "left", "None":
+                    offsetx = geo.size.height + textWidth / 2
                 case "up":
                     offsety = geo.size.height + textWidth / 2
                 case "down":
                     offsety = -(geo.size.height + textWidth / 2)
-                case "left", "None":
-                    offsetx = geo.size.height + textWidth / 2
                 case "right":
                     offsetx = -(geo.size.height + textWidth / 2)
                 default:
@@ -337,12 +383,12 @@ struct TopView:View {
             
             withAnimation(.linear(duration: animationDuration).repeatForever(autoreverses: false)) {
                 switch selectedAlignment {
+                case "left", "None":
+                    offsetx = -textWidth / 1.2
                 case "up":
                     offsety = -textWidth / 2
                 case "down":
                     offsety = geo.size.height + textWidth / 2
-                case "left", "None":
-                    offsetx = -textWidth / 2
                 case "right":
                     offsetx = geo.size.height + textWidth / 2
                 default:
@@ -355,14 +401,16 @@ struct TopView:View {
         flashTimer?.invalidate()
         flashTimer = nil
         
-        // Flash effect
+        // Flash effect - reset and restart
         if isFlash {
-              flashTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                  withAnimation(.easeInOut(duration: 0.3)) {
-                      isFlashing.toggle()
-                  }
-              }
-          }
+            isFlashing = false  // Reset state
+            
+            flashTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isFlashing.toggle()
+                }
+            }
+        }
     }
     
     private func getShadowColor() -> Color {
@@ -382,33 +430,32 @@ struct TopView:View {
         case "circle":
             Image(.circle2)
                 .resizable()
-                .scaledToFit()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(147))
+                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
             
         case "square":
             Image(.square2)
-                .resizable().scaledToFit()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(147))
+                .resizable()
+                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
              
         case "heart":
             Image(.heart2)
-                .resizable().scaledToFit()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(147))
+                .resizable()
+                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
                
         case "star":
             Image(.star2)
                 .resizable()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(147))
+                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
                
         case "ninjaStar":
             Image(.ninjaStar2)
                 .resizable()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(147))
+                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
             
         default: // "None" or any other case
             Image(.circle2)
                 .resizable()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(147))
+                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
        
         }
     }

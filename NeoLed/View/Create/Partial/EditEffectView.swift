@@ -172,7 +172,10 @@ struct EditEffectView: View {
                             ForEach(Array(alignmentOptions.enumerated()), id: \.offset) { index, align in
                                 
                                 Button {
-                                    selectedAlignment = align.alignmentName
+                                    DispatchQueue.main.async {
+                                        selectedAlignment = ""
+                                        selectedAlignment = align.alignmentName
+                                    }
                                 } label: {
                                     Image(align.alignmentImage)
                                         .resizable()

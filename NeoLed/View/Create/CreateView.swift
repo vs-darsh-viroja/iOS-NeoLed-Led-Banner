@@ -21,7 +21,7 @@ struct CreateView: View {
      @State private var textSize: CGFloat = 2.0
      @State private var strokeSize: CGFloat = 0.0
      @State private var selectedFont: String = FontManager.bricolageGrotesqueBoldFont
-     @State private var selectedColor: ColorOption = ColorOption.predefinedColors[0]
+     @State private var selectedColor: ColorOption = ColorOption.predefinedColors[1]
      @State private var selectedOutlineColor: OutlineColorOption = OutlineColorOption.predefinedOutlineColors[0]
      @State private var outlineEnabled = false
      @State private var hasCustomTextColor = false

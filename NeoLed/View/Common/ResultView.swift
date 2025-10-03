@@ -22,18 +22,29 @@ struct ResultView: View {
     let textSpeed: CGFloat
     let isHD: Bool
     
-    private var isBold: Bool { selectedEffects.contains("Bold") }
-    private var isLight: Bool { selectedEffects.contains("Light") }
-    private var isFlash: Bool { selectedEffects.contains("Flash") }
-    private var isMirror: Bool { selectedEffects.contains("Mirror") }
+     var isBold: Bool { selectedEffects.contains("Bold") }
+     var isLight: Bool { selectedEffects.contains("Light") }
+     var isFlash: Bool { selectedEffects.contains("Flash") }
+     var isMirror: Bool { selectedEffects.contains("Mirror") }
     var onBack: () -> Void
    
-    @State private var isFlashing = false
+    @State  var isFlashing = false
     
     @State var offsetx: CGFloat = 0
     @State var offsety: CGFloat = 0
     @State var textWidth: CGFloat = 0
     @State var show = false
+    
+    
+    
+    @State  var videoURL: URL? = nil
+    @State  var showShareSheet: Bool = false
+    @State  var showSaveAlert: Bool = false
+    @State  var saveAlertMessage: String = ""
+    @State  var isProcessing: Bool = false
+    
+    @State  var videoDuration: Double = 5.0
+    @State  var frameRate: Int = 30
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -195,50 +206,89 @@ struct ResultView: View {
         
                 Spacer()
                 
+                // Replace your existing HStack with share and download buttons with this:
+
                 HStack(spacing: ScaleUtility.scaledSpacing(14.57)) {
                     
-                    Image(.shareIcon1)
-                        .resizable()
-                        .frame(width: ScaleUtility.scaledValue(19.42857), height: ScaleUtility.scaledValue(19.42857))
-                        .padding(.all, ScaleUtility.scaledSpacing(7.29))
-                        .background {
-                                EllipticalGradient(
-                                    stops: [
-                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
-                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
-                                    ],
-                                    center: UnitPoint(x: 0.36, y: 0.34)
-                                )
-                         
+                    // Share Video Button
+                    Button {
+                        if let url = videoURL {
+                            showShareSheet = true
+                        } else {
+                            convertViewToVideo()
                         }
-                        .cornerRadius(4.04762)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 4.04762)
-                                .stroke(Color.accent , lineWidth: 1)
-                            
+                    } label: {
+                        if isProcessing {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .accent))
+                                .frame(width: ScaleUtility.scaledValue(19.42857), height: ScaleUtility.scaledValue(19.42857))
+                        } else {
+                            Image(.shareIcon1)
+                                .resizable()
+                                .frame(width: ScaleUtility.scaledValue(19.42857), height: ScaleUtility.scaledValue(19.42857))
                         }
+                    }
+                    .padding(.all, ScaleUtility.scaledSpacing(7.29))
+                    .background {
+                        EllipticalGradient(
+                            stops: [
+                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                            ],
+                            center: UnitPoint(x: 0.36, y: 0.34)
+                        )
+                    }
+                    .cornerRadius(4.04762)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 4.04762)
+                            .stroke(Color.accent, lineWidth: 1)
+                    }
+                    .disabled(isProcessing)
                     
-                    Image(.downloadIcon)
-                        .resizable()
-                        .frame(width: ScaleUtility.scaledValue(19.42857), height: ScaleUtility.scaledValue(19.42857))
-                        .padding(.all, ScaleUtility.scaledSpacing(7.29))
-                        .background {
-                                EllipticalGradient(
-                                    stops: [
-                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
-                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
-                                    ],
-                                    center: UnitPoint(x: 0.36, y: 0.34)
-                                )
-                         
+                    // Download Video Button
+                    Button {
+                        if let url = videoURL {
+                            saveVideoToPhotos(url)
+                        } else {
+                            convertViewToVideo()
                         }
-                        .cornerRadius(4.04762)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 4.04762)
-                                .stroke(Color.accent , lineWidth: 1)
-                            
+                    } label: {
+                        if isProcessing {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .accent))
+                                .frame(width: ScaleUtility.scaledValue(19.42857), height: ScaleUtility.scaledValue(19.42857))
+                        } else {
+                            Image(.downloadIcon)
+                                .resizable()
+                                .frame(width: ScaleUtility.scaledValue(19.42857), height: ScaleUtility.scaledValue(19.42857))
                         }
-                    
+                    }
+                    .padding(.all, ScaleUtility.scaledSpacing(7.29))
+                    .background {
+                        EllipticalGradient(
+                            stops: [
+                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                            ],
+                            center: UnitPoint(x: 0.36, y: 0.34)
+                        )
+                    }
+                    .cornerRadius(4.04762)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 4.04762)
+                            .stroke(Color.accent, lineWidth: 1)
+                    }
+                    .disabled(isProcessing)
+                }
+                .sheet(isPresented: $showShareSheet) {
+                    if let url = videoURL {
+                        ShareSheet(items: [url])
+                    }
+                }
+                .alert("Video Status", isPresented: $showSaveAlert) {
+                    Button("OK", role: .cancel) { }
+                } message: {
+                    Text(saveAlertMessage)
                 }
             }
             .padding(.horizontal,ScaleUtility.scaledSpacing(28))
@@ -256,8 +306,22 @@ struct ResultView: View {
             }
         }
     }
+
     
-    private func getShadowColor() -> Color {
+    func saveVideoToPhotos(_ url: URL) {
+        let videoSaver = VideoSaver()
+        videoSaver.successHandler = {
+            saveAlertMessage = "Video successfully saved to your photo library."
+            showSaveAlert = true
+        }
+        videoSaver.errorHandler = { error in
+            saveAlertMessage = "Error saving video: \(error.localizedDescription)"
+            showSaveAlert = true
+        }
+        videoSaver.saveVideo(url)
+    }
+    
+     func getShadowColor() -> Color {
         switch selectedColor.type {
         case .solid(let color):
             return color
@@ -268,7 +332,7 @@ struct ResultView: View {
     }
     
     @ViewBuilder
-    private func getShapeImage() -> some View {
+     func getShapeImage() -> some View {
         switch selectedShape {
         case "circle":
             Image(.circle)
@@ -290,7 +354,7 @@ struct ResultView: View {
         }
     }
     
-    private func getOffsetX() -> CGFloat {
+     func getOffsetX() -> CGFloat {
         switch selectedAlignment {
         case "up", "down":
             return offsetx
@@ -301,7 +365,7 @@ struct ResultView: View {
         }
     }
 
-    private func getOffsetY() -> CGFloat {
+     func getOffsetY() -> CGFloat {
         switch selectedAlignment {
         case "left":
             return show ? 300 : -300
@@ -314,7 +378,7 @@ struct ResultView: View {
         }
     }
 
-    private func getRotation() -> Double {
+     func getRotation() -> Double {
         switch selectedAlignment {
         case "left":
             return -270
