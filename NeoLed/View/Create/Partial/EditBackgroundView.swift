@@ -14,6 +14,17 @@ struct LEDShape {  // Changed from "Shape"
     let shapeName: String
     let shapeIcon: String
 }
+
+struct LiveWallpaper {
+    let wallpaperName: String
+    let wallpaperImage: String
+}
+
+struct FrameBackground {
+    let frameName: String
+    let frameImage: String
+}
+
 struct EditBackgroundView: View {
     
     @Binding var isHD: Bool
@@ -30,6 +41,37 @@ struct EditBackgroundView: View {
         LEDShape(shapeName: "ninjaStar", shapeIcon: "ninjaStarIcon"),
     ]
     
+    @Binding var selectedLiveBg: String
+    
+    var wallpaperOption: [LiveWallpaper] = [
+        LiveWallpaper(wallpaperName: "None", wallpaperImage: "noSelectionIcon"),
+        LiveWallpaper(wallpaperName: "Abstract1", wallpaperImage: "live1"),
+        LiveWallpaper(wallpaperName: "Abstract2", wallpaperImage: "live2"),
+        LiveWallpaper(wallpaperName: "Getty", wallpaperImage: "live3"),
+        LiveWallpaper(wallpaperName: "Minimal", wallpaperImage: "live4"),
+        LiveWallpaper(wallpaperName: "NeonLight1", wallpaperImage: "live5"),
+        LiveWallpaper(wallpaperName: "NeonLight2", wallpaperImage: "live6"),
+        LiveWallpaper(wallpaperName: "NeonLight3", wallpaperImage: "live7"),
+        LiveWallpaper(wallpaperName: "Pikaso", wallpaperImage: "live8"),
+        LiveWallpaper(wallpaperName: "SpeedLine", wallpaperImage: "live9"),
+        LiveWallpaper(wallpaperName: "Wavebreak", wallpaperImage: "live10"),
+    ]
+    
+    @Binding var frameBg: String
+    
+    var frameOption: [FrameBackground] = [
+        FrameBackground(frameName: "None", frameImage: "noSelectionIcon"),
+        FrameBackground(frameName: "frame1", frameImage: "f1"),
+        FrameBackground(frameName: "frame2", frameImage: "f2"),
+        FrameBackground(frameName: "frame3", frameImage: "f3"),
+        FrameBackground(frameName: "frame4", frameImage: "f4"),
+        FrameBackground(frameName: "frame5", frameImage: "f5"),
+        FrameBackground(frameName: "frame6", frameImage: "f6"),
+        FrameBackground(frameName: "frame7", frameImage: "f7"),
+        FrameBackground(frameName: "frame8", frameImage: "f8"),
+        FrameBackground(frameName: "frame9", frameImage: "f9"),
+        FrameBackground(frameName: "frame10", frameImage: "f10"),
+    ]
     
     
     @State private var showBgColorPicker = false
@@ -54,6 +96,109 @@ struct EditBackgroundView: View {
                         .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                     }
                 
+                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
+                    Text("Live Background")
+                        .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
+                        .kerning(0.40783)
+                        .foregroundColor(.white.opacity(0.5))
+                        .frame(maxWidth: .infinity,alignment: .leading)
+                        .padding(.leading, ScaleUtility.scaledSpacing(30))
+               
+                    ScrollView(.horizontal) {
+                        HStack(spacing: ScaleUtility.scaledSpacing(10)) {
+                            ForEach(Array(wallpaperOption.enumerated()), id: \.offset) { index, wallpaper in
+                                
+                                Button {
+                                    selectedLiveBg = wallpaper.wallpaperName
+                                } label: {
+                                    
+                                    Image(wallpaper.wallpaperImage)
+                                        .resizable()
+                                        .frame(width: wallpaper.wallpaperName == "None" ? ScaleUtility.scaledValue(16) : ScaleUtility.scaledValue(42),
+                                               height: wallpaper.wallpaperName == "None" ? ScaleUtility.scaledValue(16) :  ScaleUtility.scaledValue(42))
+                                        .padding(.all,wallpaper.wallpaperName == "None" ? ScaleUtility.scaledSpacing(13) : 0 )
+                                        .background {
+                                            if selectedLiveBg == wallpaper.wallpaperName {
+                                                EllipticalGradient(
+                                                    stops: [
+                                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                                                    ],
+                                                    center: UnitPoint(x: 0.36, y: 0.34)
+                                                )
+                                            }
+                                            else {
+                                                Color.clear
+                                            }
+                                        }
+                                        .cornerRadius(5)
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke( selectedLiveBg == wallpaper.wallpaperName ? Color.accent : Color.clear, lineWidth: 1)
+                                               
+                                            
+                                            
+                                        }
+                                }
+                                .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
+                            }
+                            
+                        }
+                        .frame(alignment: .leading)
+                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                    }
+                }
+           
+                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
+                    Text("Frame Background")
+                        .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
+                        .kerning(0.40783)
+                        .foregroundColor(.white.opacity(0.5))
+                        .frame(maxWidth: .infinity,alignment: .leading)
+                        .padding(.leading, ScaleUtility.scaledSpacing(30))
+               
+                    ScrollView(.horizontal) {
+                        HStack(spacing: ScaleUtility.scaledSpacing(10)) {
+                            ForEach(Array(frameOption.enumerated()), id: \.offset) { index, frame in
+                                
+                                Button {
+                                    frameBg = frame.frameName
+                                } label: {
+                                    
+                                    Image(frame.frameImage)
+                                        .resizable()
+                                        .frame(width: frame.frameName == "None" ? ScaleUtility.scaledValue(16) : ScaleUtility.scaledValue(42),
+                                               height: frame.frameName == "None" ? ScaleUtility.scaledValue(16) :  ScaleUtility.scaledValue(42))
+                                        .padding(.all,frame.frameName == "None" ? ScaleUtility.scaledSpacing(13) : 0 )
+                                        .background {
+                                            if frameBg == frame.frameName {
+                                                EllipticalGradient(
+                                                    stops: [
+                                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                                                    ],
+                                                    center: UnitPoint(x: 0.36, y: 0.34)
+                                                )
+                                            }
+                                            else {
+                                                Color.clear
+                                            }
+                                        }
+                                        .cornerRadius(5)
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(frameBg == frame.frameName ? Color.accent : Color.clear, lineWidth: 1)
+                                            
+                                        }
+                                }
+                                .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
+                            }
+                            
+                        }
+                        .frame(alignment: .leading)
+                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                    }
+                }
                 
                 VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                     Text("Banner Type")
@@ -183,7 +328,7 @@ struct EditBackgroundView: View {
                                             
                                         }
                                 }
-                                
+                                .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
                             }
                             
                         }

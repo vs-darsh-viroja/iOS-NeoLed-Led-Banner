@@ -20,7 +20,7 @@ struct CreateView: View {
     // Text customization states
      @State private var textSize: CGFloat = 2.0
      @State private var strokeSize: CGFloat = 0.0
-     @State private var selectedFont: String = FontManager.bricolageGrotesqueBoldFont
+     @State private var selectedFont: String = FontManager.bricolageGrotesqueRegularFont
      @State private var selectedColor: ColorOption = ColorOption.predefinedColors[1]
      @State private var selectedOutlineColor: OutlineColorOption = OutlineColorOption.predefinedOutlineColors[0]
      @State private var outlineEnabled = false
@@ -33,6 +33,8 @@ struct CreateView: View {
      @State private var selectedEffects: Set<String> = ["None"]
      @State private var selectedAlignment: String = "None"
      @State private var selectedShape: String = "None"
+     @State private var selectedLiveBg: String = "None"
+     @State private var frameBg: String = "None"
      @State private var textSpeed: CGFloat = 1.0
      @State var showPreview: Bool = false
      @State var isHD: Bool = false 
@@ -59,6 +61,8 @@ struct CreateView: View {
                     isHD: $isHD,
                     selectedBgColor: $selectedBgColor,
                     backgroundEnabled: $backgroundEnabled,
+                    selectedLiveBg: $selectedLiveBg,
+                    frameBg: $frameBg,
                     isInputFocused: $inputFocused) {
                         if text != "" {
                             showPreview = true
@@ -97,7 +101,9 @@ struct CreateView: View {
                     EditBackgroundView(isHD: $isHD,
                                        selectedShape: $selectedShape,
                                        selectedBgColor: $selectedBgColor,
-                                       backgroundEnabled: $backgroundEnabled)
+                                       backgroundEnabled: $backgroundEnabled,
+                                       selectedLiveBg: $selectedLiveBg,
+                                       frameBg: $frameBg)
                     
                     
                 }
@@ -136,6 +142,8 @@ struct CreateView: View {
                   selectedShape: selectedShape,
                   textSpeed: textSpeed,
                   isHD: isHD,
+                  selectedLiveBg: selectedLiveBg,
+                  frameBg: frameBg,
                   onBack: {
                       showPreview = false
                   }

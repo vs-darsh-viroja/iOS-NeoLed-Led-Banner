@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct Fonts {
-   let fontName: String
+   let fontDisplay: String
+   let fontImageName: String
 }
 
 
@@ -36,13 +37,21 @@ struct EditTextView: View {
        @Binding var selectedAlignment: String
     
    var fontOptions: [Fonts] = [
-       Fonts(fontName: FontManager.bricolageGrotesqueBoldFont),
-       Fonts(fontName: FontManager.audiowideRegular),
-       Fonts(fontName: FontManager.bakbakOneRegular),
-       Fonts(fontName: FontManager.caesarDressingRegular),
-       Fonts(fontName: FontManager.battambangRegular),
-       Fonts(fontName: FontManager.bradleyHandITCTTBold),
-       Fonts(fontName: FontManager.brushScriptStd),
+      Fonts(fontDisplay: FontManager.bricolageGrotesqueRegularFont ,fontImageName: FontManager.bricolageGrotesqueBoldFont),
+      Fonts(fontDisplay: FontManager.arvoRegularFont ,fontImageName: FontManager.arvoBoldFont),
+      Fonts(fontDisplay: FontManager.balsamiqSansRegularFont ,fontImageName: FontManager.balsamiqSansBoldFont),
+      Fonts(fontDisplay: FontManager.dmSerifDisplayRegularFont ,fontImageName: FontManager.dmSerifDisplayRegularFont),
+      Fonts(fontDisplay: FontManager.dotoRegularFont ,fontImageName: FontManager.dotoBoldFont),
+      Fonts(fontDisplay: FontManager.dynaPuffRegular ,fontImageName: FontManager.dynaPuffBold),
+      Fonts(fontDisplay: FontManager.lobsterTwoRegularFont ,fontImageName: FontManager.lobsterTwoBoldFont),
+      Fonts(fontDisplay: FontManager.montserratRegularFont ,fontImageName: FontManager.montserratBoldFont),
+      Fonts(fontDisplay: FontManager.nunitoRegularFont ,fontImageName: FontManager.nunitoBoldFont),
+      Fonts(fontDisplay: FontManager.openSansRegularFont ,fontImageName: FontManager.openSansBoldFont),
+      Fonts(fontDisplay: FontManager.poppinsRegularFont ,fontImageName: FontManager.poppinsBoldFont),
+      Fonts(fontDisplay: FontManager.ralewayRegularFont ,fontImageName: FontManager.ralewayBoldFont),
+      Fonts(fontDisplay: FontManager.ribeyeRegularFont ,fontImageName: FontManager.ribeyeRegularFont),
+      Fonts(fontDisplay: FontManager.ribeyeRegularFont ,fontImageName: FontManager.robotoBoldFont),
+      Fonts(fontDisplay: FontManager.zillaSlabRegularFont ,fontImageName: FontManager.zillaSlabBoldFont),
    ]
    
     var effectOptions: [Effect] = [
@@ -96,9 +105,13 @@ struct EditTextView: View {
                                VStack(spacing: ScaleUtility.scaledSpacing(6)) {
                                    
                                    let isSelected = selectedEffect.contains(effect.effectName)
+                                   let isEffectAvailable = FontManager.isEffectAvailable(effect.effectName, for: selectedFont)
                                    
                                    Button {
-                   
+                                       
+                                       // Only allow interaction if effect is available
+                                       guard isEffectAvailable else { return }
+                                       
                                        // If "None" is clicked
                                        if effect.effectName == "None" {
                                            selectedEffect.removeAll()
@@ -125,9 +138,7 @@ struct EditTextView: View {
                                        
                                        Image(effect.effectImage)
                                            .resizable()
-                                           .frame(width: effect.effectName == "Italic" 
-                                                  ? ScaleUtility.scaledValue(6)
-                                                  : ScaleUtility.scaledValue(16),
+                                           .frame(width: ScaleUtility.scaledValue(16),
                                                   height: ScaleUtility.scaledValue(16))
                                            .padding(.all, ScaleUtility.scaledSpacing(13))
                                            .background {
@@ -150,12 +161,15 @@ struct EditTextView: View {
                                                    .stroke( isSelected ? Color.accent : Color.clear, lineWidth: 1)
                                                
                                            }
+                                           .opacity(isEffectAvailable ? 1.0 : 0.3)
                                    }
+                                   .disabled(!isEffectAvailable)
+                                   .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
                                        
-                                       Text(effect.effectName)
-                                           .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(12)))
-                                           .foregroundColor(Color.primaryApp)
-                                   
+                                   Text(effect.effectName)
+                                       .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(12)))
+                                       .foregroundColor(Color.primaryApp)
+                                       .opacity(isEffectAvailable ? 1.0 : 0.3)
                                }
                            }
                            
@@ -180,14 +194,14 @@ struct EditTextView: View {
                        HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                            ForEach(Array(fontOptions.enumerated()), id: \.offset) { index, font in
                                Button(action: {
-                                   selectedFont = font.fontName
+                                   selectedFont = font.fontDisplay
                                }) {
                                    Text("Aa")
-                                       .font(.custom(font.fontName, size: .scaledFontSize(14)))
+                                       .font(.custom(font.fontImageName, size: .scaledFontSize(14)))
                                        .foregroundColor(Color.primaryApp)
                                        .padding(ScaleUtility.scaledSpacing(12))
                                        .background {
-                                           if selectedFont == font.fontName {
+                                           if selectedFont == font.fontDisplay {
                                                EllipticalGradient(
                                                    stops: [
                                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
@@ -201,11 +215,12 @@ struct EditTextView: View {
                                            }
                                        }
                                        .overlay {
-                                           RoundedRectangle(cornerRadius: 8)
-                                               .stroke(selectedFont == font.fontName ? Color.accent : Color.clear, lineWidth: 3)
+                                           RoundedRectangle(cornerRadius: 5)
+                                               .stroke(selectedFont == font.fontDisplay ? Color.accent : Color.clear, lineWidth: 2)
                                        }
-                                       .cornerRadius(8)
+                                       .cornerRadius(5)
                                }
+                               .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
                            }
                        }
                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
@@ -367,7 +382,7 @@ struct EditTextView: View {
                                            
                                        }
                                }
-                               
+                               .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
                                
                            }
                        }
@@ -380,6 +395,22 @@ struct EditTextView: View {
                }
           
 
+           }
+       }
+       .onChange(of: selectedFont) { _, newFont in
+           // Remove Bold effect if new font doesn't support it
+           if !FontManager.isEffectAvailable("Bold", for: newFont) {
+               selectedEffect.remove("Bold")
+           }
+           
+           // Remove Italic effect if new font doesn't support it
+           if !FontManager.isEffectAvailable("Italic", for: newFont) {
+               selectedEffect.remove("Italic")
+           }
+           
+           // If no effects remain after removal, add "None"
+           if selectedEffect.isEmpty {
+               selectedEffect.insert("None")
            }
        }
        .sheet(isPresented: $showTextColorPicker) {

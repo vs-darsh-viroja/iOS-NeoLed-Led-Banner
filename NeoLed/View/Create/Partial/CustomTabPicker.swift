@@ -19,12 +19,12 @@ struct CustomTabPicker: View {
             let activeRectanglePadding: CGFloat = 4  // added padding for active rectangle
             
             ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 50)
                     .fill(Color.secondaryBG)
                     .scaledFrame(baseHeight: 42)
              
 
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: 50)
                     .fill(isInside ? Color.secondaryBG : Color.accent )
                     .frame(width: tabWidth - 2 * activeRectanglePadding)
                     .scaledFrame(baseHeight: 38)

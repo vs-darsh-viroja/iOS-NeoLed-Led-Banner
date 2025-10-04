@@ -23,10 +23,13 @@ struct ResultView: View {
     let selectedShape: String
     let textSpeed: CGFloat
     let isHD: Bool
+    let selectedLiveBg: String
+    let frameBg: String
     
     var isBold: Bool { selectedEffects.contains("Bold") }
-    var isLight: Bool { selectedEffects.contains("Light") }
-    var isFlash: Bool { selectedEffects.contains("Flash") }
+    var isItalic: Bool { selectedEffects.contains("Italic") }
+    var isLight: Bool { selectedEffects.contains("Blink") }
+    var isFlash: Bool { selectedEffects.contains("Glow") }
     var isMirror: Bool { selectedEffects.contains("Mirror") }
     var onBack: () -> Void
    
@@ -48,12 +51,33 @@ struct ResultView: View {
     @State  var videoDuration: Double = 5.0
     @State  var frameRate: Int = 30
     
+    @State private var blinkPhase: Bool = false
+    
     var body: some View {
         ZStack(alignment: .top) {
             
             GeometryReader { geo in
                 
                 ZStack {
+                    
+                    if selectedLiveBg != "None" {
+                        // Display GIF based on selectedLiveBg value
+                      GifuGIFView(name: selectedLiveBg)
+                            .aspectRatio(contentMode: .fill)
+                
+         
+                    }
+                    
+                    if frameBg != "None" {
+                       
+                            Image(frameBg)
+                                .resizable()
+                                .frame(width: geo.size.width, height: geo.size.height)
+                                .ignoresSafeArea(.all)
+                              
+                    
+                    }
+                    
                     if !isHD {
                         getShapeImage()
                             .frame(width: geo.size.width, height: geo.size.height)
@@ -62,47 +86,56 @@ struct ResultView: View {
                 }
                     
                 ZStack {
-                    // Blurred glow layers behind
-                    if strokeSize > 0 {
-                        StrokeText(
-                            text: text,
-                            width: strokeSize,
-                            color: outlineEnabled ? selectedOutlineColor.color : .white,
-                            font: .custom(selectedFont, size: textSize * 100),
-                            fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
-                        )
-                        .modifier(ColorModifier(colorOption: selectedColor))
-                        .blur(radius: isLight ? 40 : 0)
-                        .opacity(isLight ? 0.5 : 1)
-                    } else {
-                        Text(text)
-                            .font(.custom(selectedFont, size: textSize * 100))
-                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                   
+                        // Blurred glow layers behind
+                        if strokeSize > 0 {
+                            StrokeText(
+                                text: text,
+                                width: strokeSize,
+                                color: outlineEnabled ? selectedOutlineColor.color : .white,
+                                font: .custom(selectedFont, size: textSize * 100),
+                                fontWeight: isBold ? .heavy : (isLight ? .light : .regular),
+                                isItalic: isItalic
+                            )
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .blur(radius: isLight ? 40 : 0)
                             .opacity(isLight ? 0.5 : 1)
-                    }
+                        } else {
+                            Text(text)
+                                .font(.custom(selectedFont, size: textSize * 100))
+                                .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                                .italic(isItalic)
+                                .modifier(ColorModifier(colorOption: selectedColor))
+                                .blur(radius: isLight ? 40 : 0)
+                                .opacity(isLight ? 0.5 : 1)
+                        }
                     
-                    if strokeSize > 0 {
-                        StrokeText(
-                            text: text,
-                            width: strokeSize,
-                            color: outlineEnabled ? selectedOutlineColor.color : .white,
-                            font: .custom(selectedFont, size: textSize * 100),
-                            fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
-                        )
-                        .kerning(0.6)
-                        .modifier(ColorModifier(colorOption: selectedColor))
-                        .blur(radius: isLight ? 20 : 0)
-                        .opacity(isLight ? 0.7 : 1)
-                    } else {
-                        Text(text)
-                            .font(.custom(selectedFont, size: textSize * 100))
-                            .kerning(0.4)
-                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                    
+                    if isLight {
+                        
+                        if strokeSize > 0 {
+                            StrokeText(
+                                text: text,
+                                width: strokeSize,
+                                color: outlineEnabled ? selectedOutlineColor.color : .white,
+                                font: .custom(selectedFont, size: textSize * 100),
+                                fontWeight: isBold ? .heavy : (isLight ? .light : .regular),
+                                isItalic: isItalic
+                            )
+                            .kerning(0.6)
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .blur(radius: isLight ? 20 : 0)
                             .opacity(isLight ? 0.7 : 1)
+                        } else {
+                            Text(text)
+                                .font(.custom(selectedFont, size: textSize * 100))
+                                .kerning(0.4)
+                                .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                                .italic(isItalic)
+                                .modifier(ColorModifier(colorOption: selectedColor))
+                                .blur(radius: isLight ? 20 : 0)
+                                .opacity(isLight ? 0.7 : 1)
+                        }
                     }
                     
                     // Sharp text on top
@@ -112,20 +145,22 @@ struct ResultView: View {
                             width: strokeSize,
                             color: outlineEnabled ? selectedOutlineColor.color : .white,
                             font: .custom(selectedFont, size: textSize * 100),
-                            fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
+                            fontWeight: isBold ? .heavy : (isLight ? .light : .regular),
+                            isItalic: isItalic
                         )
                         .modifier(ColorModifier(colorOption: selectedColor))
                         .brightness(0.1)
-                        .opacity(isFlash && !isFlashing ? 0.3 : 1.0)
+                        .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
                     } else {
                         Text(text)
                             .font(.custom(selectedFont, size: textSize * 100))
                             .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                            .italic(isItalic)
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .brightness(0.1)
-                            .opacity(isFlash && !isFlashing ? 0.3 : 1.0)
-                    }
-                }
+                            .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
+                     }
+                  }
                     .scaleEffect(x: isMirror ? -1 : 1, y: 1) // Mirror effect
                     .frame(height: 200)
                     .fixedSize()
@@ -181,14 +216,15 @@ struct ResultView: View {
                            }
                            
                         
-                        // Flash effect
-                                       if isFlash {
-                                           Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                                               withAnimation(.easeInOut(duration: 0.3)) {
-                                                   isFlashing.toggle()
-                                               }
-                                           }
-                                       }
+                        // Flash effect - reset and restart
+                        if isFlash {
+                            withAnimation(
+                                .easeInOut(duration: 0.5)
+                                .repeatForever(autoreverses: true)
+                            ) {
+                                blinkPhase = true
+                            }
+                        }
                     }
                 
   
@@ -314,6 +350,20 @@ struct ResultView: View {
             
             withAnimation(.linear(duration: animationDuration).repeatForever(autoreverses: false)) {
                 show.toggle()
+            }
+            
+
+        }
+        .onChange(of: isFlash) { _, newValue in
+            if newValue {
+                withAnimation(
+                    .easeInOut(duration: 0.5)
+                    .repeatForever(autoreverses: true)
+                ) {
+                    blinkPhase = true
+                }
+            } else {
+                blinkPhase = false
             }
         }
     }

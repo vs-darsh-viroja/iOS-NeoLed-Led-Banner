@@ -15,6 +15,17 @@ struct StrokeText: View {
     let color: Color
     let font: Font
     let fontWeight: Font.Weight
+    let isItalic: Bool  // ADD THIS NEW PARAMETER
+    
+    // ADD THIS INITIALIZER for backward compatibility
+    init(text: String, width: CGFloat, color: Color, font: Font, fontWeight: Font.Weight, isItalic: Bool = false) {
+        self.text = text
+        self.width = width
+        self.color = color
+        self.font = font
+        self.fontWeight = fontWeight
+        self.isItalic = isItalic
+    }
 
     var body: some View {
         ZStack {
@@ -27,10 +38,12 @@ struct StrokeText: View {
             .foregroundColor(color)
             .font(font)
             .fontWeight(fontWeight)
+            .italic(isItalic)  // ADD THIS
             
             Text(text)
                 .font(font)
                 .fontWeight(fontWeight)
+                .italic(isItalic)  // ADD THIS
         }
     }
 }
